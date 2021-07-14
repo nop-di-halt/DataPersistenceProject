@@ -31,5 +31,6 @@ public class MenuUIHandler : MonoBehaviour
 #else
         Application.Quit();
 #endif
+        GameManager.Instatnce.SaveData();
     }
 }
