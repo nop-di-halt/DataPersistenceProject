@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public string PlayerName { get; private set; }
     private int bestScore;
     private string bestPlayer;
+    public List<HighScoreEntry> scores;
 
     private void Awake()
     {
@@ -20,10 +21,12 @@ public class GameManager : MonoBehaviour
         Instatnce = this;
         DontDestroyOnLoad(gameObject);
         PlayerName = "Player";
-        if (!LoadData())
+        scores = new List<HighScoreEntry>();
+        if (!LoadHighScores())
         {
-            bestPlayer = PlayerName;
+            InitializeTable();
         }
+        InitializeBestScore();
     }
     public void UpdateBestScore(int score)
     {
@@ -45,31 +48,71 @@ public class GameManager : MonoBehaviour
     {
         return $"{"Best Score: "} {bestPlayer}{":"} {bestScore}";
     }
-    public void SaveData()
+    public void SaveHighScores()
     {
-        var saveData = new Data() { s_BestPlayer = bestPlayer, s_BestScore = bestScore };
-        string json = JsonUtility.ToJson(saveData);
-        File.WriteAllText(Application.persistentDataPath + "/gameData.json", json);
+        Table table = new Table() { scores = new List<string>() };
+        foreach (var item in scores)
+        {
+            string entry = item.s_Name + " " + item.s_Score;
+            table.scores.Add(entry);
+        }
+        string json = JsonUtility.ToJson(table);
+        File.WriteAllText(Application.persistentDataPath + "/table.json", json);
     }
-    public bool LoadData()
+    public bool LoadHighScores()
     {
-        string path = Application.persistentDataPath + "/gameData.json";
+        string path = Application.persistentDataPath + "/table.json";
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
-            var data = JsonUtility.FromJson<Data>(json);
-            bestPlayer = data.s_BestPlayer;
-            bestScore = data.s_BestScore;
+            var table = JsonUtility.FromJson<Table>(json);
+            foreach (var item in table.scores)
+            {
+                var row = item.Split(' ');
+                scores.Add(new HighScoreEntry() { s_Name = row[0], s_Score = int.Parse(row[1]) });
+            }
             return true;
         }
         return false;
     }
+    private void InitializeBestScore()
+    {
+        int maxScore = scores.Max(e => e.s_Score);
+        var entry = scores.Find(e => e.s_Score == maxScore);
+        bestPlayer = entry.s_Name;
+        bestScore = entry.s_Score;
+    }
+    public void UpdateHighScores(int score)
+    {
+        UpdateBestScore(score);
+        int min = scores.Min(e => e.s_Score);
+        if (score > min)
+        {
+            var entryToRemove = scores.Find(e => e.s_Score == min);
+            scores.Remove(entryToRemove);
+        }
+        scores.Add(new HighScoreEntry() { s_Name = PlayerName, s_Score = score });
+    }
+
+    // if cannot load table from file, initialize it with default values
+    private void InitializeTable()
+    {
+        scores.Add(new HighScoreEntry() { s_Name = "PlayerOne", s_Score = 0 });
+        scores.Add(new HighScoreEntry() { s_Name = "PlayerTwo", s_Score = 0 });
+        scores.Add(new HighScoreEntry() { s_Name = "PlayerThree", s_Score = 0 });
+        scores.Add(new HighScoreEntry() { s_Name = "PlayerFour", s_Score = 0 });
+        scores.Add(new HighScoreEntry() { s_Name = "PlayerFive", s_Score = 0 });
+    }
 }
 [System.Serializable]
-class Data
+class Table
 {
-    public string s_BestPlayer;
-    public int s_BestScore;
+    public List<string> scores;
+}
+public class HighScoreEntry
+{
+    public string s_Name;
+    public int s_Score;
 }
 
 

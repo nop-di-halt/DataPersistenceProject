@@ -58,7 +58,7 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene("StartScreen");
+                SceneManager.LoadScene("HighScoresScreen");
             }
         }
     }
@@ -73,9 +73,8 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
-        GameManager.Instatnce.UpdateBestScore(m_Points);
+        GameManager.Instatnce.UpdateHighScores(m_Points);
         ShowBestScore();
-
     }
     private void ShowBestScore()
     {
