@@ -33,4 +33,8 @@ public class MenuUIHandler : MonoBehaviour
 #endif
         GameManager.Instatnce.SaveHighScores();
     }
+    public void LoadSettingsScreen()
+    {
+        SceneManager.LoadScene("SettingsScreen");
+    }
 }

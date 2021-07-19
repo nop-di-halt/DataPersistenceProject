@@ -16,7 +16,7 @@ public class MainManager : MonoBehaviour
 
     private bool m_Started = false;
     private int m_Points;
-
+    
     private bool m_GameOver = false;
 
     // Start is called before the first frame update

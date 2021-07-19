@@ -10,6 +10,7 @@ public class Ball : MonoBehaviour
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
+        GetComponent<MeshRenderer>().material.color = GameManager.Instatnce.ballColor;
     }
     
     private void OnCollisionExit(Collision other)

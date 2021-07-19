@@ -33,6 +33,8 @@ public class HighScoresController : MonoBehaviour
             SceneManager.LoadScene("StartScreen");
         }
     }
+
+    // Fill high scores table with data
     private void SetTableEntries()
     {
         int entryNumber = 1;

@@ -10,7 +10,7 @@ public class Paddle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        GetComponent<MeshRenderer>().material.color = GameManager.Instatnce.paddleColor;
     }
 
     // Update is called once per frame

@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     private int bestScore;
     private string bestPlayer;
     public List<HighScoreEntry> scores;
+    public Color ballColor;
+    public Color paddleColor;
 
     private void Awake()
     {
@@ -27,6 +29,13 @@ public class GameManager : MonoBehaviour
             InitializeTable();
         }
         InitializeBestScore();
+        if(!LoadSettings())
+        {   
+            //if cannot load settings from disk initialize with default values
+            ballColor = Color.red;
+            paddleColor = Color.red;
+        }
+        
     }
     public void UpdateBestScore(int score)
     {
@@ -90,11 +99,12 @@ public class GameManager : MonoBehaviour
         {
             var entryToRemove = scores.Find(e => e.s_Score == min);
             scores.Remove(entryToRemove);
+            scores.Add(new HighScoreEntry() { s_Name = PlayerName, s_Score = score });
         }
-        scores.Add(new HighScoreEntry() { s_Name = PlayerName, s_Score = score });
+        
     }
 
-    // if cannot load table from file, initialize it with default values
+    // if cannot load data source from file, initialize it with default values
     private void InitializeTable()
     {
         scores.Add(new HighScoreEntry() { s_Name = "PlayerOne", s_Score = 0 });
@@ -102,6 +112,19 @@ public class GameManager : MonoBehaviour
         scores.Add(new HighScoreEntry() { s_Name = "PlayerThree", s_Score = 0 });
         scores.Add(new HighScoreEntry() { s_Name = "PlayerFour", s_Score = 0 });
         scores.Add(new HighScoreEntry() { s_Name = "PlayerFive", s_Score = 0 });
+    }
+    private bool LoadSettings()
+    {
+        string path = Application.persistentDataPath + "/settings.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            var settingsData = JsonUtility.FromJson<GameSettings>(json);
+            ballColor = settingsData.ballColor;
+            paddleColor = settingsData.paddleColor;
+            return true;
+        }
+        return false;
     }
 }
 [System.Serializable]
@@ -114,6 +137,13 @@ public class HighScoreEntry
     public string s_Name;
     public int s_Score;
 }
+[System.Serializable]
+class GameSettings
+{
+   public Color ballColor;
+   public Color paddleColor;
+}
+
 
 
 
